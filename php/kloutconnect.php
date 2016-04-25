@@ -4,9 +4,11 @@ require_once("lib/kloutapiv2php/KloutAPIv2.class.php");
 $kloutapi_key = "6vmh7zhxfbmtem5puk4s6whb";
 // Load the Klout API library
 $klout = new KloutAPIv2($kloutapi_key);
-// Get Klout ID
 
 $network = "tw";
+$a = array( 1);
+$KloutScore = null;
+$KloutArray = [];
 
 if (isset($_POST['id'])) {
 	$idTwitter = $_POST['id'];
@@ -24,5 +26,7 @@ if (isset($idTwitter)) {
 	echo 'The twitter id is not found';
 }
 // returns rounded up whole number
-echo $KloutScore = ceil($klout->KloutScore($kloutid));
+$KloutScore = ceil($klout->KloutScore($kloutid));
+//$KloutArray = array_fill_keys($a, $KloutScore);
+echo($KloutScore);
 ?>
