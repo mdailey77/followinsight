@@ -23,32 +23,16 @@
 		<!-- <script src="js/services.js"></script> -->
 		<!-- <script src="js/controllers.js"></script> -->
 		<script>
-			var AngularTwitterApp = angular.module('twitterApp', ['ngResource']);
-			
-			AngularTwitterApp.factory('TwitterUser', ['$resource', function($resource){
+			angular.module('twitterApp', ['ngResource'])			
+			.factory('TwitterUser', ['$resource', function($resource){
 				return $resource("php/twitterconnect.php?id=:id");	
-			}]);
-			/*
-			AngularTwitterApp.config(function($routeProvider) {
-				$routeProvider
-				// route for the home page
-				.when('/', {
-					templateUrl : 'pages/home.html',
-					controller  : 'mainController'
-				})
-				// route for the twitterid page
-				.when('/twitterId', {
-					templateUrl : 'pages/twitterid.html',
-					controller  : 'twitterIdController'
-				}).
-				otherwise({
-					redirectTo: '/'
-				});   
-			});
-			*/
-			AngularTwitterApp.controller('mainController', function($scope, TwitterUser) {
-				$scope.loading = false;
-				$scope.counter = 0;   
+			}])
+			.factory('KloutUser', ['$resource', function($resource){
+				return $resource("php/kloutconnect.php?id=:id", {}, {isArray:true});	
+			}])
+			.controller('mainController', function($scope, TwitterUser, KloutUser) {
+				$scope.loading = false;				
+				$scope.kloutscore = null;
 				$scope.error = false;
 				$scope.users = [];
 				$scope.getResult = function(id){
@@ -56,16 +40,12 @@
 					$scope.loading = true;
 					TwitterUser.get({
 						id: id
-					}, function(user) {
-						console.log(user);						
-						
+					}, function(user) {						
 						if(user.error) {
 							$scope.error = true;
 							$scope.message = "Validation Error please fill the user_id or screen_name field";
 						}else{
-							if(!user.errors){
-								$scope.counter += 1;
-								user.position = $scope.counter;
+							if(!user.errors){								
 								$scope.users.push(user);
 								$scope.error = false;
 							}else{            
@@ -73,12 +53,20 @@
 								$scope.message = user.errors[0]['message']+" - "+user.errors[0]['code'] ;
 							}               
 						}                      
-					}).then(function(id) {
-						
-					}; 
+					}).$promise.then(function(user){
+						KloutUser.get({
+							id: user.id
+						}, function(score) {
+							if(!score) {							
+								console.log('An error occurred. No Klout score returned.');
+							}else{
+								$scope.kloutscore = score;
+								console.log('The Klout API response: ' + score);
+							}
+						});
+					});
 					$scope.loading = false;
-				};
-				
+				};				
 				$scope.removeUser = function(index){
 					$scope.users.splice(index, 1);
 				}; 
@@ -147,6 +135,7 @@
 							<li class="list-group-item">{{ user.statuses_count }} tweets</li>
 							<li class="list-group-item">member of {{ user.listed_count }} lists</li>
 							<li class="list-group-item">last status update was at {{ user.status.created_at }}</li>
+							<li class="list-group-item">Klout score {{ kloutscore }}</li>
 						</ul>
 					</div>
 				</div>
