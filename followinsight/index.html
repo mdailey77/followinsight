@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html ng-app="twitterApp">
+	<head>
+		 <!-- START METADATA -->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Should I Follow?</title>
+		<meta content="text/javascript" http-equiv="Content-Script-Type">
+		<meta content="text/css" http-equiv="Content-Style-Type">
+		<meta content="NOINDEX, NOFOLLOW" name="robots">
+		<!-- END METADATA -->	
+		<!-- START CSS -->
+		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
+		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"> -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/superhero/bootstrap.min.css" >
+		<link rel="stylesheet" href="styles/styles.css" >
+		<!-- END CSS -->
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-resource.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!--<script scrc="js/app.js"></script>-->
+		<!-- <script src="js/services.js"></script> -->
+		<!-- <script src="js/controllers.js"></script> -->
+		<script>
+			var AngularTwitterApp = angular.module('twitterApp', ['ngResource']);
+			
+			AngularTwitterApp.factory('TwitterUser', ['$resource', function($resource){
+				return $resource("php/twitterconnect.php?id=:id");	
+			}]);
+			/*
+			AngularTwitterApp.config(function($routeProvider) {
+				$routeProvider
+				// route for the home page
+				.when('/', {
+					templateUrl : 'pages/home.html',
+					controller  : 'mainController'
+				})
+				// route for the twitterid page
+				.when('/twitterId', {
+					templateUrl : 'pages/twitterid.html',
+					controller  : 'twitterIdController'
+				}).
+				otherwise({
+					redirectTo: '/'
+				});   
+			});
+			*/
+			AngularTwitterApp.controller('mainController', function($scope, TwitterUser) {
+				$scope.loading = false;
+				$scope.counter = 0;   
+				$scope.error = false;
+				$scope.users = [];
+				$scope.getResult = function(id){
+					$scope.users = [];
+					$scope.loading = true;
+					TwitterUser.get({
+						id: id
+					}, function(user) {
+						console.log(user);						
+						
+						if(user.error) {
+							$scope.error = true;
+							$scope.message = "Validation Error please fill the user_id or screen_name field";
+						}else{
+							if(!user.errors){
+								$scope.counter += 1;
+								user.position = $scope.counter;
+								$scope.users.push(user);
+								$scope.error = false;
+							}else{            
+								$scope.error = true;
+								$scope.message = user.errors[0]['message']+" - "+user.errors[0]['code'] ;
+							}               
+						}                      
+					}).then(function(id) {
+						
+					}; 
+					$scope.loading = false;
+				};
+				
+				$scope.removeUser = function(index){
+					$scope.users.splice(index, 1);
+				}; 
+			});
+		</script>
+	</head>
+	<body ng-controller="mainController">
+		<!-- Static navbar -->
+		<nav class="navbar navbar-default navbar-static-top">
+		  <div class="container">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="#">Follow Insight</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+			  <ul class="nav navbar-nav">
+				<li><a href="#">Home</a></li>
+				<li><a href="#about">About</a></li>
+				<!--<li><a href="#contact">Contact</a></li>-->
+				<!--<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+				  <ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li class="dropdown-header">Nav header</li>
+					<li><a href="#">Separated link</a></li>
+					<li><a href="#">One more separated link</a></li>
+				  </ul>
+				</li>-->
+			  </ul>
+			</div><!--/.nav-collapse -->
+		  </div>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-offset-3 col-md-6">					
+					<h2>Should I follow?</h2>
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<input class="form-control"  type="text" placeholder="user_id or screen_name" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
+						</div>                
+						<a class="btn btn-primary"  role="button" ng-click="getResult(id)">Get Insight</a>
+					</form>					
+				</div>
+			</div>
+			<div class="userinfo" ng-show="users.length">
+				<div class="row">
+					<div class="col-md-offset-2 col-md-8">
+						<ul class="list-group" ng-repeat="user in users">
+							<li class="list-group-item"><img src="{{ user.profile_image_url }}"></li>
+							<li class="list-group-item">username: {{ user.name }}</li>
+							<li class="list-group-item">screenname: {{ user.screen_name }}</li>
+							<li class="list-group-item">name: {{ user.name }}</li>
+							<li class="list-group-item">description: {{ user.description }}</li>
+							<li class="list-group-item">{{ user.followers_count }} followers</li>
+							<li class="list-group-item">{{ user.friends_count }} following</li>
+							<li class="list-group-item">located in {{ user.location }}</li>
+							<li class="list-group-item">{{ user.favourites_count }} favorited tweets</li>
+							<li class="list-group-item">{{ user.statuses_count }} tweets</li>
+							<li class="list-group-item">member of {{ user.listed_count }} lists</li>
+							<li class="list-group-item">last status update was at {{ user.status.created_at }}</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div ng-show="error">
+				<p>{{ message }}</p>
+			</div>
+		</div>
+	</body>
+</html>
