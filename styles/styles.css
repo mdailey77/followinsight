@@ -1,0 +1,24 @@
+﻿body {
+/*background: #18bc9c;*/
+}
+
+.signin {
+	color: #fff;	
+}
+.navbar {
+    /*text-transform: uppercase;*/
+    /*font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;*/
+    font-weight: 600;
+	padding: 10px 0;
+}
+.navbar a:focus {
+    outline: 0;
+}
+div.userinfo {
+	margin-top: 7%;
+}
+@media (min-width: 768px) {
+	.form-inline .form-control {
+		width: 300px;
+	}
+}
