@@ -27,6 +27,17 @@ if (isset($idTwitter)) {
 }
 // returns rounded up whole number
 $KloutScore = ceil($klout->KloutScore($kloutid));
-//$KloutArray = array_fill_keys($a, $KloutScore);
-echo($KloutScore);
+
+class KloutObj {
+	public $score;
+}
+
+function AddScore($kloutscore) {
+	$userObj = new KloutObj();
+	$userObj->score = $kloutscore;
+	return $userObj;
+}
+$userKloutScore = AddScore($KloutScore);
+
+echo json_encode($userKloutScore);
 ?>
