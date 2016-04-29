@@ -1,8 +1,13 @@
 ﻿body {
-/*background: #18bc9c;*/
+	/*background: #18bc9c;*/
+	font-weight: 500;
+	font-size: 1.5em;
 }
-h1, h2, h3, h4, h5, h6 {
-	font-weight: 600;
+label {
+	font-size: 1.9em;
+    font-weight: 500;
+	vertical-align: bottom;
+	
 }
 .signin {
 	color: #fff;	
@@ -22,5 +27,9 @@ div.userinfo {
 @media (min-width: 768px) {
 	.form-inline .form-control {
 		width: 300px;
+	}
+	label {
+		display:block;
+		float:left;
 	}
 }

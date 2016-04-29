@@ -26,6 +26,29 @@
 			.factory('KloutUser', ['$resource', function($resource){
 				return $resource("php/kloutconnect.php?id=:id");
 			}])
+			.filter('datetime', function($filter)
+			{
+				return function(input)
+				{
+					if(input == null){ return ""; }
+					var _date = $filter('date')(new Date(input),
+						'MMMM d, y - hh:mm:ss');
+					return _date;
+				};
+			})
+			.filter('profileimageFilter', function () {
+				return function (input) {
+				   if (input == null) {return ""; }
+				   var imageformat = input.substr(input.length - 3);
+				   var trimmedinput = input.substring(0, input.indexOf('_normal'));
+				   if (imageformat == 'png') {
+						var original_profileimage = trimmedinput + '.png';
+					} else if (imageformat == 'jpg'){
+						var original_profileimage = trimmedinput + '.jpg';
+					}				   
+				   return original_profileimage;
+				}
+			})
 			.controller('mainController', function($scope, TwitterUser, KloutUser) {
 				$scope.loading = false;				
 				$scope.kloutscore = null;
@@ -41,7 +64,8 @@
 							$scope.error = true;
 							$scope.message = "Validation Error please fill the user_id or screen_name field";
 						}else{
-							if(!user.errors){								
+							if(!user.errors){
+								console.log(user);
 								$scope.users.push(user);
 								$scope.error = false;
 							}else{            
@@ -106,13 +130,13 @@
 		</nav>
 		<div class="container">
 			<div class="row">
-				<div class="col-md-offset-3 col-md-6 ">					
-					<h2>Should I follow?</h2>
+				<div class="col-md-offset-2 col-md-10">					
 					<form class="form-inline" role="form">
 						<div class="form-group">
-							<input class="form-control"  type="text" placeholder="user_id or screen_name" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
-						</div>                
-						<a class="btn btn-primary"  role="button" ng-click="getResult(id)">Get Insight</a>
+							<label for="email address"class="">Should I follow. . .</label>
+							<input class="form-control"  type="text" placeholder="Search by screenname" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
+							<a class="btn btn-primary"  role="button" ng-click="getResult(id)">Get Insight</a>
+						</div>			
 					</form>					
 				</div>
 			</div>
@@ -134,13 +158,16 @@
 							<li class="list-group-item">Klout score {{ kloutscore }}</li>
 						</ul> -->
 							<div class="row">
-								<div class="col-md-2">
-									<img src="{{ user.profile_image_url }}">
+								<div class="col-md-4">
+									<img width="200" height="200" alt="Twitter profile image" src="{{ user.profile_image_url | profileimageFilter }}">
 								</div>
-								<div class="col-md-10">
-									<h3>{{ user.name }}</h3>
+								<div class="col-md-8">
+									<h4>{{ user.name }}</h4>
 								</div>
-								<div class="col-md-12">						
+								<div class="col-md-8">
+									<p>{{ user.screen_name }}</p>
+								</div>
+								<div class="col-md-8">						
 									located in {{ user.location }}
 								</div>
 							</div>
@@ -163,7 +190,7 @@
 								member of {{ user.listed_count }} lists
 							</div>
 							<div class="col-md-12">
-								last status update was at {{ user.status.created_at }}
+								last status update:&nbsp; {{ user.status.created_at | datetime }}
 							</div>
 							<div class="col-md-12">
 								Klout score {{ kloutscore }}
