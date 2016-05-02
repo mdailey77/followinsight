@@ -8,16 +8,14 @@
 		<meta content="text/css" http-equiv="Content-Style-Type">
 		<meta content="NOINDEX, NOFOLLOW" name="robots">
 		<!-- END METADATA -->	
-		<!-- START CSS -->
-		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
-		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"> -->
+		<!-- START CSS -->		
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/superhero/bootstrap.min.css" >
 		<link rel="stylesheet" href="styles/styles.css" >
 		<!-- END CSS -->		
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-resource.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>		
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-resource.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>		
 		<script>
 			angular.module('twitterApp', ['ngResource'])			
 			.factory('TwitterUser', ['$resource', function($resource){
@@ -36,16 +34,37 @@
 					return _date;
 				};
 			})
+			.filter('verifiedFilter', function () {
+				return function (input) {				  
+				   if (input == true) {
+						input = 'yes';
+					} else if (input == false){
+						input = 'no';
+					}				   
+				   return input;
+				}
+			})
+			.filter('locationFilter', function () {
+				return function (input) {
+					var userlocation = "location not set";
+					if(input != ""){				
+						userlocation = "located in " + input;
+					}									   
+				   return userlocation;
+				}
+			})
 			.filter('profileimageFilter', function () {
 				return function (input) {
-				   if (input == null) {return ""; }
-				   var imageformat = input.substr(input.length - 3);
+				   if (input == null) {return ""; }				   
+				   var imageformat = input.substr(input.lastIndexOf('.') + 1);
 				   var trimmedinput = input.substring(0, input.indexOf('_normal'));
 				   if (imageformat == 'png') {
 						var original_profileimage = trimmedinput + '.png';
 					} else if (imageformat == 'jpg'){
 						var original_profileimage = trimmedinput + '.jpg';
-					}				   
+					} else if (imageformat == 'jpeg'){
+						var original_profileimage = trimmedinput + '.jpeg';
+					}
 				   return original_profileimage;
 				}
 			})
@@ -94,114 +113,109 @@
 			});
 		</script>
 	</head>
-	<body ng-controller="mainController">
-		<!-- Static navbar -->
-		<nav class="navbar navbar-default navbar-static-top">
-		  <div class="container">
-			<div class="navbar-header">
-			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			  </button>
-			  <a class="navbar-brand" href="#">Follow Insight</a>
-			</div>
-			<div id="navbar" class="navbar-collapse collapse">
-			  <ul class="nav navbar-nav">
-				<li><a href="#">Home</a></li>
-				<li><a href="#about">About</a></li>
-				<!--<li><a href="#contact">Contact</a></li>-->
-				<!--<li class="dropdown">
-				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-				  <ul class="dropdown-menu">
-					<li><a href="#">Action</a></li>
-					<li><a href="#">Another action</a></li>
-					<li><a href="#">Something else here</a></li>
-					<li role="separator" class="divider"></li>
-					<li class="dropdown-header">Nav header</li>
-					<li><a href="#">Separated link</a></li>
-					<li><a href="#">One more separated link</a></li>
-				  </ul>
-				</li>-->
-			  </ul>
-			</div><!--/.nav-collapse -->
-		  </div>
-		</nav>
-		<div class="container">
+	<body ng-controller="mainController">		
+		<div class="container">			
 			<div class="row">
-				<div class="col-md-offset-2 col-md-10">					
+				<div class="col-md-3 sidebar">
+					<div class="sidebar-content">
+						<h5>ABOUT FOLLOW INSIGHT</h5>
+						<p>When using Twitter there are times when you're not sure
+						if it's worthwhile to follow someone. The Follow Insight app
+						can look up any Twitter user by screenname and provide insight about 
+						that user.
+					</div>
+				</div>				
+				<div class="col-md-9 main">
+					<h1>Follow Insight</h1>
 					<form class="form-inline" role="form">
 						<div class="form-group">
-							<label for="email address"class="">Should I follow. . .</label>
+							<label for="email address"class="">Should I follow. . . </label>
 							<input class="form-control"  type="text" placeholder="Search by screenname" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
 							<a class="btn btn-primary"  role="button" ng-click="getResult(id)">Get Insight</a>
 						</div>			
-					</form>					
-				</div>
-			</div>
-			<div class="userinfo" ng-show="users.length">
-				<div class="row">
-					<div class="col-md-offset-2 col-md-7" ng-repeat="user in users">
-						<!-- <ul class="list-group" ng-repeat="user in users">
-							<li class="list-group-item"><img src="{{ user.profile_image_url }}"></li>							
-							<li class="list-group-item">screenname: {{ user.screen_name }}</li>
-							<li class="list-group-item">name: {{ user.name }}</li>
-							<li class="list-group-item">description: {{ user.description }}</li>
-							<li class="list-group-item">{{ user.followers_count }} followers</li>
-							<li class="list-group-item">{{ user.friends_count }} following</li>
-							<li class="list-group-item">located in {{ user.location }}</li>
-							<li class="list-group-item">{{ user.favourites_count }} favorited tweets</li>
-							<li class="list-group-item">{{ user.statuses_count }} tweets</li>
-							<li class="list-group-item">member of {{ user.listed_count }} lists</li>
-							<li class="list-group-item">last status update was at {{ user.status.created_at }}</li>
-							<li class="list-group-item">Klout score {{ kloutscore }}</li>
-						</ul> -->
-							<div class="row">
-								<div class="col-md-4">
-									<img width="200" height="200" alt="Twitter profile image" src="{{ user.profile_image_url | profileimageFilter }}">
-								</div>
-								<div class="col-md-8">
-									<h4>{{ user.name }}</h4>
-								</div>
-								<div class="col-md-8">
-									<p>{{ user.screen_name }}</p>
-								</div>
-								<div class="col-md-8">						
-									located in {{ user.location }}
-								</div>
+					</form>
+					<div class="userinfo">
+						<div class="row">
+							<img width="75" height="75" id="loadspinner" src="styles/bluespinner.gif" ng-if="loading" alt="loading" />
+							<div class="col-md-offset-1 col-md-11" ng-repeat="user in users" ng-show="users.length">								
+								<div class="table-responsive">
+									<table class="sectionsection-container">
+										<tr>
+											<td class="profileimage">
+												<img width="150" height="150" alt="Twitter profile image" src="{{ user.profile_image_url | profileimageFilter }}">
+											</td>
+											<td>
+												<table class="secondsection-content">
+													<tr>
+														<td>
+															<h2>{{ user.name }}</h2>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															{{ user.screen_name }}
+														</td>
+													</tr>
+													<tr>
+														<td>
+															{{ user.location | locationFilter }}
+														</td>
+													</tr>
+													<tr>
+														<td>
+															{{ user.description }}
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<div class="secondsection-content"><span class="output">{{ user.followers_count | number:0 }}</span> followers</div>
+															<div class="secondsection-content"><span class="output">{{ user.friends_count | number:0 }}</span> following</div>
+														</td>														
+													</tr>
+													<tr>
+														<td>
+															<div class="secondsection-content"><span class="output">{{ user.statuses_count | number:0 }}</span> tweets</div>
+															<div class="secondsection-content"><span class="output">{{ user.favourites_count | number:0 }}</span> favorited tweets</div>
+														</td>
+														<td>
+															
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<div class="secondsection-content">member of <span class="output">{{ user.listed_count | number:0 }}</span> lists</div>
+															<div class="secondsection-content">user verified: <span class="output">{{ user.verified | verifiedFilter }}</span></div>
+														</td>															
+													</tr>
+													<tr>
+														<td colspan="2">
+															last status update:&nbsp; <span class="output">{{ user.status.created_at | datetime }}</span>
+														</td>
+													</tr>
+													<tr>
+														<td colspan="2">
+															joined Twitter on:&nbsp; <span class="output">{{ user.created_at | datetime }}</span>
+														</td>
+													</tr>
+													<tr>
+														<td colspan="2">
+															Klout score <span class="output">{{ kloutscore }}</span>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</div>									
 							</div>
-							<div class="col-md-12">
-								<p>{{ user.description }}</p>
-							</div>
-							<div class="col-md-6">
-								{{ user.followers_count }} followers
-							</div>
-							<div class="col-md-6">
-								{{ user.friends_count }} following
-							</div>
-							<div class="col-md-6">
-								{{ user.statuses_count }} tweets
-							</div>
-							<div class="col-md-6">
-								{{ user.favourites_count }} favorited tweets
-							</div>
-							<div class="col-md-12">
-								member of {{ user.listed_count }} lists
-							</div>
-							<div class="col-md-12">
-								last status update:&nbsp; {{ user.status.created_at | datetime }}
-							</div>
-							<div class="col-md-12">
-								Klout score {{ kloutscore }}
-							</div>
-						
+						</div>
+					</div>		
+					<div ng-show="error">
+						<p>{{ message }}</p>
 					</div>
 				</div>
-			</div>		
-			<div ng-show="error">
-				<p>{{ message }}</p>
 			</div>
+			
 		</div>
 	</body>
 </html>
