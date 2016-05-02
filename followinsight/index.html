@@ -69,12 +69,14 @@
 				}
 			})
 			.controller('mainController', function($scope, TwitterUser, KloutUser) {
-				$scope.loading = false;				
+				$scope.buttontext = "Get Insight";
+				$scope.loading = false;
 				$scope.kloutscore = null;
 				$scope.error = false;
 				$scope.users = [];
 				$scope.getResult = function(id){
 					$scope.users = [];
+					$scope.buttontext = "Loading";
 					$scope.loading = true;
 					TwitterUser.get({
 						id: id
@@ -105,6 +107,7 @@
 							}
 						});
 					});
+					$scope.buttontext = "Get Insight";
 					$scope.loading = false;
 				};				
 				$scope.removeUser = function(index){
@@ -131,12 +134,11 @@
 						<div class="form-group">
 							<label for="email address"class="">Should I follow. . . </label>
 							<input class="form-control"  type="text" placeholder="Search by screenname" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
-							<a class="btn btn-primary"  role="button" ng-click="getResult(id)">Get Insight</a>
+							<a class="btn btn-primary" role="button" ng-click="getResult(id)">{{ buttontext }}</a>
 						</div>			
 					</form>
 					<div class="userinfo">
-						<div class="row">
-							<img width="75" height="75" id="loadspinner" src="styles/bluespinner.gif" ng-if="loading" alt="loading" />
+						<div class="row">							
 							<div class="col-md-offset-1 col-md-11" ng-repeat="user in users" ng-show="users.length">								
 								<div class="table-responsive">
 									<table class="sectionsection-container">
@@ -176,10 +178,7 @@
 														<td>
 															<div class="secondsection-content"><span class="output">{{ user.statuses_count | number:0 }}</span> tweets</div>
 															<div class="secondsection-content"><span class="output">{{ user.favourites_count | number:0 }}</span> favorited tweets</div>
-														</td>
-														<td>
-															
-														</td>
+														</td>														
 													</tr>
 													<tr>
 														<td>
@@ -188,18 +187,24 @@
 														</td>															
 													</tr>
 													<tr>
-														<td colspan="2">
+														<td>
 															last status update:&nbsp; <span class="output">{{ user.status.created_at | datetime }}</span>
 														</td>
 													</tr>
 													<tr>
-														<td colspan="2">
+														<td>
 															joined Twitter on:&nbsp; <span class="output">{{ user.created_at | datetime }}</span>
 														</td>
 													</tr>
 													<tr>
-														<td colspan="2">
-															Klout score <span class="output">{{ kloutscore }}</span>
+														<td>
+															<table>
+																<tr>
+																	<td class="klout-container">
+																		<img id="kloutlogo" src="styles/klout-logo-color-light-flat.png" alt="Powered by Klout" /> score: <span class="output">{{ kloutscore }}</span>
+																	</td>
+																</tr>
+															</table>															
 														</td>
 													</tr>
 												</table>
