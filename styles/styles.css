@@ -6,10 +6,10 @@
 	padding-bottom: 20px;
 }
 label {
-	font-size: 17px;
+	font-size: 18px;
     font-weight: 500;
 	vertical-align: bottom;
-	margin-top: 7px;
+	margin-top: 10px;
 	margin-bottom:0px;
 	padding-bottom: 0px;
 }
@@ -57,7 +57,7 @@ input[type="text"].form-control {
 div.userinfo {
 	margin-top: 7%;
 	text-align:left;
-	margin-left: 4%;
+	margin-left: 6.5%;
 }
 .userinfo h2 {
 	margin-top:0px;
@@ -74,8 +74,14 @@ div.userinfo {
 	padding-right: 20px;
 	vertical-align:top;
 }
+.klout-container {
+	width:auto;	
+}
 #loadspinner {
 	margin-left: 45%;
+}
+#kloutlogo {
+	width:80px;
 }
 @media (min-width: 768px) {
 	body {
