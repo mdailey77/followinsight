@@ -1,5 +1,6 @@
 <?php
 
-define('CONSUMER_KEY', 'XXXXXXXXXXXXXXXXXXXXX');
-define('CONSUMER_SECRET', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-define('OAUTH_CALLBACK', 'http://www.mattdailey.net/followinsight/');
+define('CONSUMER_KEY', 'YOUR TWITTER API KEY');
+define('CONSUMER_SECRET', 'YOUR TWITTER API SECRET');
+define('KLOUT_KEY', 'YOUR KLOUT API KEY');
+define('OAUTH_CALLBACK', 'http://www.yoursite.com/followinsight/');
