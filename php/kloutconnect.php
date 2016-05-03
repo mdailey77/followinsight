@@ -1,9 +1,9 @@
 <?php
 require_once("lib/kloutapiv2php/KloutAPIv2.class.php");
-// Set your Klout app key
-$kloutapi_key = "6vmh7zhxfbmtem5puk4s6whb";
+require_once('config/config.php');
+
 // Load the Klout API library
-$klout = new KloutAPIv2($kloutapi_key);
+$klout = new KloutAPIv2(KLOUT_KEY);
 
 $network = "tw";
 $a = array( 1);
