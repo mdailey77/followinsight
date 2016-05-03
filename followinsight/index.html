@@ -3,7 +3,7 @@
 	<head>
 		 <!-- START METADATA -->
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Should I Follow?</title>
+		<title>Follow Insight</title>
 		<meta content="text/javascript" http-equiv="Content-Script-Type">
 		<meta content="text/css" http-equiv="Content-Style-Type">
 		<meta content="NOINDEX, NOFOLLOW" name="robots">
@@ -15,106 +15,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-resource.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>		
-		<script>
-			angular.module('twitterApp', ['ngResource'])			
-			.factory('TwitterUser', ['$resource', function($resource){
-				return $resource("php/twitterconnect.php?id=:id");	
-			}])
-			.factory('KloutUser', ['$resource', function($resource){
-				return $resource("php/kloutconnect.php?id=:id");
-			}])
-			.filter('datetime', function($filter)
-			{
-				return function(input)
-				{
-					if(input == null){ return ""; }
-					var _date = $filter('date')(new Date(input),
-						'MMMM d, y - hh:mm:ss');
-					return _date;
-				};
-			})
-			.filter('verifiedFilter', function () {
-				return function (input) {				  
-				   if (input == true) {
-						input = 'yes';
-					} else if (input == false){
-						input = 'no';
-					}				   
-				   return input;
-				}
-			})
-			.filter('locationFilter', function () {
-				return function (input) {
-					var userlocation = "location not set";
-					if(input != ""){				
-						userlocation = "located in " + input;
-					}									   
-				   return userlocation;
-				}
-			})
-			.filter('profileimageFilter', function () {
-				return function (input) {
-				   if (input == null) {return ""; }				   
-				   var imageformat = input.substr(input.lastIndexOf('.') + 1);
-				   var trimmedinput = input.substring(0, input.indexOf('_normal'));
-				   if (imageformat == 'png') {
-						var original_profileimage = trimmedinput + '.png';
-					} else if (imageformat == 'jpg'){
-						var original_profileimage = trimmedinput + '.jpg';
-					} else if (imageformat == 'jpeg'){
-						var original_profileimage = trimmedinput + '.jpeg';
-					}
-				   return original_profileimage;
-				}
-			})
-			.controller('mainController', function($scope, TwitterUser, KloutUser) {
-				$scope.buttontext = "Get Insight";
-				$scope.loading = false;
-				$scope.kloutscore = null;
-				$scope.error = false;
-				$scope.users = [];
-				$scope.getResult = function(id){
-					$scope.users = [];
-					$scope.buttontext = "Loading";
-					$scope.loading = true;
-					TwitterUser.get({
-						id: id
-					}, function(user) {						
-						if(user.error) {
-							$scope.error = true;
-							$scope.message = "Please enter a screenname.";
-						}else{
-							if(!user.errors){
-								console.log(user);
-								$scope.users.push(user);
-								$scope.error = false;
-							}else{            
-								$scope.error = true;
-								$scope.message = user.errors[0]['message']+" - "+user.errors[0]['code'] ;
-							}               
-						}                      
-					}).$promise.then(function(user){
-						KloutUser.get({
-							id: user.id
-						}, function(userkloutscore) {
-							if(!userkloutscore) {							
-								console.log('An error occurred. No Klout score returned.');
-							}else{
-								$scope.kloutscore = userkloutscore.score;
-								var score_stringified = JSON.stringify(userkloutscore);
-								console.log('The Klout API response: ' + score_stringified);
-							}
-							$scope.buttontext = "Get Insight";
-							$scope.loading = false;
-						});
-					});					
-				};				
-				$scope.removeUser = function(index){
-					$scope.users.splice(index, 1);
-				}; 
-			});
-		</script>
+		<script src="js/app.js"></script>		
 	</head>
 	<body ng-controller="mainController">		
 		<div class="container">			
@@ -125,7 +26,7 @@
 						<p>When using Twitter there are times when you're not sure
 						if it's worthwhile to follow someone. The Follow Insight app
 						can look up any Twitter user by screenname and provide insight about 
-						that user including their Klout score. 
+						that user including their Klout score.</p>
 					</div>
 				</div>				
 				<div class="col-md-9 main">
@@ -134,7 +35,7 @@
 						<div class="form-group">
 							<label for="email address"class="">Should I follow. . . </label>
 							<input class="form-control"  type="text" placeholder="Search by screenname" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
-							<a class="btn btn-primary" role="button" ng-disabled="loading" ng-click="getResult(id)">{{ buttontext }}</a>
+							<a class="btn btn-primary" role="button" ng-disabled="buttontext=='Loading'" ng-click="getResult(id)">{{ buttontext }}</a>
 						</div>			
 					</form>
 					<div class="userinfo">
@@ -219,8 +120,7 @@
 						<p>{{ message }}</p>
 					</div>
 				</div>
-			</div>
-			
+			</div>			
 		</div>
 	</body>
 </html>
