@@ -83,7 +83,7 @@
 					}, function(user) {						
 						if(user.error) {
 							$scope.error = true;
-							$scope.message = "Validation Error please fill the user_id or screen_name field";
+							$scope.message = "Please enter a screenname.";
 						}else{
 							if(!user.errors){
 								console.log(user);
@@ -105,10 +105,10 @@
 								var score_stringified = JSON.stringify(userkloutscore);
 								console.log('The Klout API response: ' + score_stringified);
 							}
+							$scope.buttontext = "Get Insight";
+							$scope.loading = false;
 						});
-					});
-					$scope.buttontext = "Get Insight";
-					$scope.loading = false;
+					});					
 				};				
 				$scope.removeUser = function(index){
 					$scope.users.splice(index, 1);
@@ -125,7 +125,7 @@
 						<p>When using Twitter there are times when you're not sure
 						if it's worthwhile to follow someone. The Follow Insight app
 						can look up any Twitter user by screenname and provide insight about 
-						that user.
+						that user including their Klout score. 
 					</div>
 				</div>				
 				<div class="col-md-9 main">
@@ -134,7 +134,7 @@
 						<div class="form-group">
 							<label for="email address"class="">Should I follow. . . </label>
 							<input class="form-control"  type="text" placeholder="Search by screenname" ng-model="id" ng-keypress="($event.which === 13)?getResult(id):0" required>
-							<a class="btn btn-primary" role="button" ng-click="getResult(id)">{{ buttontext }}</a>
+							<a class="btn btn-primary" role="button" ng-disabled="loading" ng-click="getResult(id)">{{ buttontext }}</a>
 						</div>			
 					</form>
 					<div class="userinfo">
