@@ -1,5 +1,5 @@
 <?php
 
-define('CONSUMER_KEY', 'XceCqjdiXVibWMiyX2d1cpkhK');
-define('CONSUMER_SECRET', 'RT8MWWMJOg5ZkhIxSGDtpuSSZTZPn9Ta2Zujz3n7XxKjPhRjTa');
-define('OAUTH_CALLBACK', 'http://www.mattdailey.net/followinsight/userinfo');
+define('CONSUMER_KEY', 'jZyaTqf7FQs8BI8d4ZdFPgO1Z');
+define('CONSUMER_SECRET', '8GQLUHCqeFlU66YWaSQrYZ8wwIrpLBFxVbaPTqJav607F5v6h1');
+define('OAUTH_CALLBACK', 'http://www.mattdailey.net/followinsight/');
