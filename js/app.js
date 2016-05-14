@@ -17,9 +17,9 @@ angular.module('twitterApp', ['ngResource'])
 })
 .filter('verifiedFilter', function () {
 	return function (input) {				  
-	   if (input == true) {
+	   if (input) {
 			input = 'yes';
-		} else if (input == false){
+		} else {
 			input = 'no';
 		}				   
 	   return input;
