@@ -45,6 +45,8 @@ angular.module('twitterApp', ['ngResource'])
 			var original_profileimage = trimmedinput + '.jpg';
 		} else if (imageformat == 'jpeg'){
 			var original_profileimage = trimmedinput + '.jpeg';
+		} else if (imageformat == 'gif'){
+			var original_profileimage = trimmedinput + '.gif';
 		}
 	   return original_profileimage;
 	}
